@@ -24,7 +24,7 @@ io.on("connection", async (socket) => {
         if (!session) socket.emit("receiver-join-error")
         else {
             socket.join(data)
-            socket.emit("receiver-join-success")
+            socket.emit("receiver-join-success",data)
 
             const numbersOfConnections = io.sockets.adapter.rooms.get(data)?.size
             socket.in(data).emit("receiver-join-session", numbersOfConnections)
