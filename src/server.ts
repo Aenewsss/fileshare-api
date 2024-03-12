@@ -3,7 +3,6 @@ config()
 import { createServer } from "http"
 import { environments } from "./environments";
 import { Server } from "socket.io";
-import { ISession } from "./interfaces";
 
 const server = createServer()
 const PORT = environments.PORT || 3022
@@ -43,6 +42,13 @@ io.on("connection", async (socket) => {
     })
     socket.on("file-raw", (data: { sessionId: string, buffer: any }) => {
         socket.in(data.sessionId).emit("fs-share", data.buffer)
+    })
+
+    socket.on('manual-disconnect', (data: string) => {
+        socket.leave(data)
+        
+        const numbersOfConnections = io.sockets.adapter.rooms.get(data)?.size
+        socket.in(data).emit("leave-session",numbersOfConnections)
     })
 
     socket.on("disconnect", (reason) => {
